@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Data Lake Export": {
+      "commandName": "Project",
+      "commandLineArgs": "SQL=\"Select top 100 CONO, ITNO, FUDS from MITMAS\" Filename=\"C:\\temp\\DLExport.csv\" Connection=\"C:\\Temp\\APPGroup.ionapi\" Title=\"Test Query\""
+    }
+  }
+}

@@ -1,0 +1,1 @@
+﻿Select top 10000 CONO, ITNO, FUDS from MITMAS order by CONO, ITNO

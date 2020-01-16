@@ -1,0 +1,8 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/Data Lake Export
+/Data Lake Export/bin
+/Data Lake Export/obj
+/packages
