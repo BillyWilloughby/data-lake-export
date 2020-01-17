@@ -6,3 +6,6 @@
 /Data Lake Export/bin
 /Data Lake Export/obj
 /packages
+*.7z
+*.tmp
+*.user
