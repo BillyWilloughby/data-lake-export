@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json.Linq;
 
 namespace Data_Lake_Export
 {
@@ -46,6 +47,7 @@ namespace Data_Lake_Export
             private static double _intMajorWidth = 0; //Used to hold the overall width of PDF
             private static IONAPI _ionAPI;
             private static string _proxy;
+            public static string _compassURL { get; set; }
 
             static void Main(string[] args)
             {
@@ -101,7 +103,7 @@ namespace Data_Lake_Export
 
             private static void parseCommandLineParameters(string[] args)
             {
- 
+
                 foreach (string thisParameter in args)
                 {
                     if (thisParameter.Contains("="))
@@ -471,33 +473,31 @@ namespace Data_Lake_Export
                         ws.Name = _title;
                         //Build Headers
 
-                        int rowIndex = 1;
-                        int colIndex = 1;
+                        int rowIndex = 0;
+                        int colIndex = 0;
 
-
-
-                        int intX = 0;
                         string[] rowHeaders = new string[queryResults.Columns.Count];
 
-                        while (queryResults.Columns.Count > intX)
+                        while (queryResults.Columns.Count > colIndex)
                         {
-                            rowHeaders[intX] = queryResults.Columns[intX].ColumnName;
+                            rowHeaders[colIndex] = queryResults.Columns[colIndex].ColumnName;
 
-                            ws.Cells[1, intX + 1].Value = queryResults.Columns[intX].ColumnName;
+                            //Excel starts at 1,1
+                            ws.Cells[rowIndex + 1, colIndex + 1].Value = queryResults.Columns[colIndex].ColumnName;
 
                             switch (
-                                queryResults.Columns[intX].DataType.ToString().ToUpper().Trim())
+                                queryResults.Columns[colIndex].DataType.ToString().ToUpper().Trim())
                             {
                                 case "BIGINT":
                                 case "SMALLINT":
                                 case "SYSTEM.INT64":
                                 case "INT":
-                                    ws.Column(intX + 1).Style.Numberformat.Format = "##0";
+                                    ws.Column(colIndex + 1).Style.Numberformat.Format = "##0";
                                     break;
 
                                 case "SYSTEM.DECIMAL":
                                 case "DECIMAL":
-                                    ws.Column(intX + 1).Style.Numberformat.Format = "#,##0";
+                                    ws.Column(colIndex + 1).Style.Numberformat.Format = "#,##0";
                                     break;
 
                                 case "SYSTEM.STRING":
@@ -510,38 +510,41 @@ namespace Data_Lake_Export
                                 case "SYSTEM.DATETIME":
                                 case "DATETIME":
                                 case "DATETIME2":
-                                    ws.Column(intX + 1).Style.Numberformat.Format = "yyyy-mm-dd HH:MM";
+                                    ws.Column(colIndex + 1).Style.Numberformat.Format = "yyyy-mm-dd HH:MM";
                                     break;
-                                    
+
                                 default:
                                     Console.WriteLine("Unknown Data type: " +
-                                                      queryResults.Columns[intX].DataType.ToString().ToUpper().Trim());
+                                                      queryResults.Columns[colIndex].DataType.ToString().ToUpper().Trim());
                                     break;
 
                             }
-                            intX = intX + 1;
+                            colIndex++;
 
                         }
 
+                        rowIndex++;//First Row is Header Row  Start Writing on Next Row
+
+
                         if (queryResults.Rows.Count > 0)
                         {
-                            rowIndex = 2;
-                            while (rowIndex <= queryResults.Rows.Count)
+                            foreach (DataRow thisDataRow in queryResults.Rows)
                             {
-                                intX = 0;
-                                if (rowIndex / 5000.0 == Math.Truncate(rowIndex / 5000.0))
+                                colIndex = 0;
+                                if (rowIndex / 500.0 == Math.Truncate(rowIndex / 500.0))
                                 {
-                                    Console.WriteLine("Processing Rows " + rowIndex + "+");
+                                    Console.Write("\rProcessing Rows " + rowIndex + "+                             ");
                                 }
                                 foreach (string thisColumn in rowHeaders)
                                 {
-                                    ws.Cells[rowIndex, intX + 1].Value = queryResults.Rows[rowIndex - 1].ItemArray[intX].ToString();
-                                    intX = intX + 1;
+                                    ws.Cells[rowIndex + 1, colIndex + 1].Value = thisDataRow.ItemArray[colIndex].ToString();
+                                    colIndex = colIndex + 1;
                                 }
-                                rowIndex = rowIndex + 1;
-
+                                //Console.Write("\rRecord {0}...          ", rowIndex);
+                                rowIndex++;
                             }
 
+                            Console.WriteLine();
                         }
                         else
                         {
@@ -579,7 +582,7 @@ namespace Data_Lake_Export
             {
                 try
                 {
-                    PdfDocumentRenderer renderer = new PdfDocumentRenderer(true, PdfFontEmbedding.Always);
+                    PdfDocumentRenderer renderer = new PdfDocumentRenderer();
                     int fontSize = 10;
                     var pdfDoc = new PdfDocument();
                     var pdfPage = pdfDoc.AddPage();
@@ -627,10 +630,10 @@ namespace Data_Lake_Export
                     int tableRowIndex = 0;  //Row one was created in create table function
                     if (queryResults.Rows.Count > 0)
                     {
-                        Console.WriteLine ("Rows to Process : " + queryResults.Rows.Count);
+                        Console.WriteLine("Rows to Process : " + queryResults.Rows.Count);
 
                         Row thisRow;
-                        while (queryResults.Rows.Count  > documentRowIndex)
+                        while (queryResults.Rows.Count > documentRowIndex)
                         {
                             colIndex = 0;
                             if (documentRowIndex / 5000.0 == Math.Truncate(documentRowIndex / 5000.0))
@@ -643,16 +646,16 @@ namespace Data_Lake_Export
                                 pdfDDocument.LastSection.AddParagraph(
                                     queryResults.Rows[tableRowIndex].ItemArray[(int)_rowBreakLocation].ToString().Trim());
                                 pdfDDocument.LastSection.LastParagraph.AddBookmark(
-                                    queryResults.Rows[tableRowIndex ].ItemArray[(int)_rowBreakLocation].ToString().Trim());
+                                    queryResults.Rows[tableRowIndex].ItemArray[(int)_rowBreakLocation].ToString().Trim());
                             }
 
                             if (_rowBreak != "" && _rowBreakLocation != null &&
-                                queryResults.Rows[tableRowIndex ].ItemArray[(int)_rowBreakLocation].ToString().Trim() != "" /*&& tableRowIndex > 1*/)
+                                queryResults.Rows[tableRowIndex].ItemArray[(int)_rowBreakLocation].ToString().Trim() != "" /*&& tableRowIndex > 1*/)
                             {
-                                System.Diagnostics.Debug.WriteLine(queryResults.Rows[tableRowIndex ].ItemArray[(int)_rowBreakLocation].ToString().Trim());
+                                System.Diagnostics.Debug.WriteLine(queryResults.Rows[tableRowIndex].ItemArray[(int)_rowBreakLocation].ToString().Trim());
                                 if (_rowBreak != "")
                                 {
-                                    _title = queryResults.Rows[tableRowIndex ].ItemArray[(int)_rowBreakLocation].ToString().Trim();
+                                    _title = queryResults.Rows[tableRowIndex].ItemArray[(int)_rowBreakLocation].ToString().Trim();
                                     pdfDDocument.LastSection.PageSetup.TopMargin = Unit.FromInch(.65);
                                 }
 
@@ -661,7 +664,7 @@ namespace Data_Lake_Export
                                     Table finalTable = thisTable.Clone();
                                     autosizeTableColumns(ref finalTable, ref rowHeaders, ref columnWidth, myStandardFont, myHeaderFont, fontSize);
                                     pdfDDocument.LastSection.Add(finalTable);
-                                    createNewSection(ref pdfDDocument, queryResults.Rows[tableRowIndex ].ItemArray[(int)_rowBreakLocation].ToString().Trim());
+                                    createNewSection(ref pdfDDocument, queryResults.Rows[tableRowIndex].ItemArray[(int)_rowBreakLocation].ToString().Trim());
                                     thisTable = createNewTable(ref pdfDDocument, ref rowHeaders, fontHeader, fontSize);
                                     columnWidth = new XSize[queryResults.Columns.Count];
                                     tableRowIndex = 0;
@@ -774,7 +777,7 @@ namespace Data_Lake_Export
 
                     }
 
-                    Console.Write("Rendering ");
+                    Console.WriteLine("Rendering ...");
 
 
                     renderer.Document = pdfDDocument;
@@ -788,8 +791,7 @@ namespace Data_Lake_Export
                     Console.WriteLine();
                     Console.WriteLine("Writing to disk ...");
                     renderer.PdfDocument.Save(filename);
-                    Console.WriteLine();
-
+                    Console.WriteLine("Fini");
                     return 0;
                 }
                 catch (Exception ex)
@@ -918,44 +920,43 @@ namespace Data_Lake_Export
 
             }
 
+            private static int PDFPageNumber = 1;
+
             private static void DocumentRenderer_PrepareDocumentProgress(object sender, DocumentRenderer.PrepareDocumentProgressEventArgs e)
             {
-                Console.Write(".");
+                Console.Write("\rPage {0}...          ", PDFPageNumber);
+                PDFPageNumber++;
             }
-
-            //private static async Task renderMessage()
-            //{
-            //    Console.Write(".");
-            //}
 
             private static async Task<DataTable> runDataLakeAsync(string sqlFile)
             {
                 string bearerToken = _ionAPI.getBearerToken();
 
-                Console.WriteLine("Loading Compass Query...");
+                Console.WriteLine("Loading Compass SQL File : " + _sql);
+
                 string SQL = "";
                 if (File.Exists(sqlFile))
-                     SQL = File.ReadAllText(sqlFile);
+                    SQL = File.ReadAllText(sqlFile, Encoding.UTF8);
                 else
                 {
                     Console.WriteLine("Compass Query file not found " + sqlFile);
                     Environment.Exit(-22);
                 }
-                
-                Console.WriteLine("Loading Query: " + _sql);
-                Console.WriteLine("Output File: " + _filename);
+
+                Console.WriteLine("Output will be written to: " + _filename);
                 Console.WriteLine("Calling Compass API...");
 
                 Task<HttpResponseMessage> query =
                 _compassURL
                     .AppendPathSegment("/v1/compass/jobs")
+                    .SetQueryParam("resultFormat", "application/x-ndjson")
                     .WithOAuthBearerToken(bearerToken)
                     .WithHeader("User-Agent", "DataMover")
                     .WithHeader("Accept-Encoding", "deflate")
                     .WithHeader("Cache-Control", "no-cache")
-                    .WithHeader("resultFormat", "application/json")
                     .AllowAnyHttpStatus()
                     .SendStringAsync(HttpMethod.Post, SQL);
+
 
                 if (!query.Result.IsSuccessStatusCode)
                 {
@@ -973,7 +974,6 @@ namespace Data_Lake_Export
 
                 Console.Write("Compass API: " + dyn.status);
 
-
                 query =
                     _compassURL
                         .AppendPathSegment("/v1/compass/jobs/" + queryID + "/status", false)
@@ -982,7 +982,6 @@ namespace Data_Lake_Export
                         .WithHeader("User-Agent", "DataMover")
                         .WithHeader("Accept-Encoding", "deflate")
                         .WithHeader("Cache-Control", "no-cache")
-                        .WithHeader("resultFormat", "application/json")
                         .AllowAnyHttpStatus()
                         .GetAsync();
 
@@ -1008,7 +1007,6 @@ namespace Data_Lake_Export
                             .WithOAuthBearerToken(bearerToken)
                             .WithHeader("User-Agent", "DataMover")
                             .WithHeader("Accept-Encoding", "deflate")
-                            .WithHeader("resultFormat", "application/json")
                             .AllowAnyHttpStatus()
                             .GetAsync();
 
@@ -1036,18 +1034,18 @@ namespace Data_Lake_Export
                 Console.WriteLine("");
 
                 var columnTypes = dyn.columns;
-                //Console.WriteLine(_compassURL + "/v1/compass/jobs/" + queryID + "/result");
+
+                Console.WriteLine("Result ID  : " + queryID + "");
 
                 query =
                     _compassURL
                         .AppendPathSegment("/v1/compass/jobs/" + queryID + "/result", false)
                         .WithOAuthBearerToken(bearerToken)
                         .WithHeader("Connection", "keep-alive")
-                        .WithHeader("Host", "mingle-ionapi.inforcloudsuite.com")
                         .WithHeader("Cache-Control", "no-cache")
-                        .WithHeader("Accept", "*/*")
-                        .WithHeader("User-Agent", "Noctilucent")
+                        .WithHeader("User-Agent", "DataMover")
                         .WithHeader("Accept-Encoding", "Deflate")
+                        .WithHeader("Accept", "application/x-ndjson")
                         .WithTimeout(600)
                         .AllowAnyHttpStatus()
                         .GetAsync();
@@ -1059,8 +1057,7 @@ namespace Data_Lake_Export
                 }
 
                 responseBody = await query.ReceiveString();
-
-                //dyn = JsonConvert.DeserializeObject(responseBody);
+                //File.WriteAllText("Debug.txt", responseBody);
 
                 DataTable thisData = new DataTable("ExportMI");
                 string[] colStrings;
@@ -1072,62 +1069,65 @@ namespace Data_Lake_Export
                     return null;
                 }
 
+
+                var jsonReader = new JsonTextReader(new StringReader(responseBody))
+                {
+                    SupportMultipleContent = true // This is important!
+                };
+
+                var jsonSerializer = new JsonSerializer();
+
+
                 //Return Results
                 Console.WriteLine("Parsing Results to Data Table...");
-                foreach (string thisRow in responseBody.Split('\n'))
+                while (jsonReader.Read())
                 {
                     columnID = 0;
+                    dyn = jsonSerializer.Deserialize(jsonReader);
+
                     if (recordID == 0)
                     {
-                        foreach (string thisColumn in SplitCSV(thisRow))
+                        foreach (JProperty property in dyn)
                         {
-                            thisData.Columns.Add(thisColumn);
+                            thisData.Columns.Add(property.Name);
                             thisData.Columns[columnID].DataType =
                                 getTypeFromString(columnTypes[columnID].datatype.Value);
                             columnID++;
                         }
+                        columnID = 0;
                     }
-                    else
+                                       
+                    DataRow thisDataRow = thisData.NewRow();
+                    foreach (JProperty property in dyn)
                     {
 
-                        DataRow thisDataRow = thisData.NewRow();
-                        colStrings = SplitCSV(thisRow);
 
-                        foreach (string thisValue in colStrings)
+                        if (thisData.Columns[columnID].DataType == typeof(long)
+                            && property.Value.ToString().IndexOf('.') > 0
+                            )
                         {
-                            if (thisRow.Length == 0)
-                                continue;
-
-                            if (thisData.Columns[columnID].DataType == typeof(long)
-                                && thisValue.IndexOf('.') > 0
-                                )
-                            {
-                                thisDataRow[columnID] =
-                                    Convert.ChangeType(
-                                        thisValue.Substring(0,
-                                            thisValue.IndexOf('.'))
-                                        , thisData.Columns[columnID].DataType);
-                            }
-                            else
-                            {
-                                thisDataRow[columnID] =
-                                    Convert.ChangeType(thisValue, thisData.Columns[columnID].DataType);
-                            }
-                            columnID++;
+                            thisDataRow[columnID] =
+                                Convert.ChangeType(
+                                    property.Value.ToString().Substring(0,
+                                        property.Value.ToString().IndexOf('.'))
+                                    , thisData.Columns[columnID].DataType);
                         }
-                        if (thisRow.Length != 0)
-                            thisData.Rows.Add(thisDataRow);
+                        else
+                        {
+                            thisDataRow[columnID] =
+                                Convert.ChangeType(property.Value.ToString(), thisData.Columns[columnID].DataType);
+                        }
+                        columnID++;
                     }
+
+                    thisData.Rows.Add(thisDataRow);
+
                     recordID++;
                 }
                 return thisData;
 
-
-
             }
-
-            public static string _compassURL { get; set; }
-
+                       
             private static Type getTypeFromString(string typeName)
             {
                 switch (typeName.ToUpper())
