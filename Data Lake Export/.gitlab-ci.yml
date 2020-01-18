@@ -22,8 +22,8 @@
 
 # place project specific paths in variables to make the rest of the script more generic
 variables:
-  NUGET_PATH: 'C:\ProgramData\chocolatey\bin\nuget.exe'
-  MSBUILD_PATH: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin\MSBuild.exe'
+  NUGET_PATH: %NUGET_PATH%
+  MSBUILD_PATH: %MSBUILD_PATH%
   
 stages:
   - build
