@@ -111,6 +111,11 @@ namespace Data_Lake_Export
                         string parameter = thisParameter.Substring(0, thisParameter.IndexOf("="));
                         string value = thisParameter.Substring(thisParameter.IndexOf("=") + 1);
 
+                        if (value.Contains("%"))
+                        {   //Workaround for VS not expanding variables in debug
+                            value = Environment.GetEnvironmentVariable(value.Replace("%", ""));
+                        }
+
                         switch (parameter.ToUpper())
                         {
                             case "CSV":
@@ -1096,7 +1101,7 @@ namespace Data_Lake_Export
                         }
                         columnID = 0;
                     }
-                                       
+
                     DataRow thisDataRow = thisData.NewRow();
                     foreach (JProperty property in dyn)
                     {
@@ -1127,7 +1132,7 @@ namespace Data_Lake_Export
                 return thisData;
 
             }
-                       
+
             private static Type getTypeFromString(string typeName)
             {
                 switch (typeName.ToUpper())
