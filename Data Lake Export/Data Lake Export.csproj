@@ -109,6 +109,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".gitlab-ci.yml" />
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
