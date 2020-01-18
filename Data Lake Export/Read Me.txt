@@ -11,8 +11,13 @@ The default export is Excel XLSX files.
 
 This Product requires the .Net Framework version 4.8 to run.
 
-Several common uses have been listed in the Samples Folder.  The batch file in the Samples Folder must be updated with 
-your Compass API endpoint and your IONAPI Authentiation file before the samples will execute.
+Several common uses have been listed in the Samples Folder.  The batch file in the Samples Folder requires
+the environment variables be setup for the Compass API URL and the ION API authentation file that is 
+generated when a connection authorization is created in ION API.  The environment variable %DL_CompassURL%
+should be set to the Compass URL you wish to connect to.  The environment variable %DL_ConnectionFile% 
+should be set to the path of the ION API file to use with Compass.
+
+Syntax Information:
                   
 	Mandatory Syntax:
 		SQL="Full Path to SQL input file"
