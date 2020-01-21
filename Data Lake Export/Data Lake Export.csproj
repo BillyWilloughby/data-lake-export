@@ -119,6 +119,9 @@
     <None Include=".gitlab-ci.yml" />
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Samples\Build Samples.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="database_down.ico" />
