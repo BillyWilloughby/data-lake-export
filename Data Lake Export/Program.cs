@@ -940,23 +940,35 @@ namespace Data_Lake_Export
                 dynamic columnTypes;
                 bool quickSave;
                 dynamic dyn;
+                string SQL = "";
 
                 bool.TryParse(Environment.GetEnvironmentVariable("DL_QuickDataTable"), out quickSave);
                 if (quickSave && File.Exists("DL_QuickDataTable.tmp"))
                 {
-                    responseBody = File.ReadAllText("DL_QuickDataTable.tmp");
-                    columnTypes = File.ReadAllText("DL_QuickDataColumns.tmp");
-                    dyn = JsonConvert.DeserializeObject(columnTypes);
-                    columnTypes = dyn.columns;
-                    Status = "Quick";
-                    goto QuickDataLoad;
+                    try
+                    {
+                        responseBody = File.ReadAllText("DL_QuickDataTable.tmp");
+                        columnTypes = File.ReadAllText("DL_QuickDataColumns.tmp");
+                        SQL = File.ReadAllText("DL_QuickSQL.tmp", Encoding.UTF8);
+
+                        if (SQL.Equals(File.ReadAllText(sqlFile, Encoding.UTF8)))
+                        {
+
+                            dyn = JsonConvert.DeserializeObject(columnTypes);
+                            columnTypes = dyn.columns;
+                            Status = "Quick";
+                            goto QuickDataLoad;
+                        }
+                    }
+                    catch (Exception ex) { //Do nothing if lookup failes
+                    }
                 }
 
                 string bearerToken = _ionAPI.getBearerToken();
 
                 Console.WriteLine("Loading Compass SQL File : " + _sql);
 
-                string SQL = "";
+
                 if (File.Exists(sqlFile))
                     SQL = File.ReadAllText(sqlFile, Encoding.UTF8);
                 else
@@ -964,6 +976,8 @@ namespace Data_Lake_Export
                     Console.WriteLine("Compass Query file not found " + sqlFile);
                     Environment.Exit(-22);
                 }
+                if (quickSave)
+                    File.WriteAllText("DL_QuickSQL.tmp", SQL, Encoding.UTF8);
 
                 Console.WriteLine("Output will be written to: " + _filename);
                 Console.WriteLine("Calling Compass API...");
