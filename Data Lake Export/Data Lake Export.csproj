@@ -110,6 +110,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataLake.cs" />
     <Compile Include="ProxyHttpClientFactory.cs" />
     <Compile Include="IONAPI.cs" />
     <Compile Include="Program.cs" />
