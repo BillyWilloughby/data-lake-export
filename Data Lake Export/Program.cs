@@ -1,11 +1,7 @@
-﻿using Flurl;
-using OfficeOpenXml;
+﻿using OfficeOpenXml;
 using OfficeOpenXml.Table;
 using System.Drawing;
 using System.IO;
-using System.Net.Http;
-using System.Text.RegularExpressions;
-using Newtonsoft.Json.Linq;
 
 namespace Data_Lake_Export
 {
@@ -17,11 +13,9 @@ namespace Data_Lake_Export
     using PdfSharp.Drawing;
     using PdfSharp.Pdf;
     using System;
-    using System.Collections.Generic;
     using System.Data;
     using System.Diagnostics;
     using System.Text;
-    using System.Threading.Tasks;
     using Font = MigraDoc.DocumentObjectModel.Font;
 
     namespace DLExport
@@ -66,7 +60,7 @@ namespace Data_Lake_Export
                         });
 
                     Console.WriteLine("Output will be written to: " + _filename);
-                    DataTable queryResults = DataLake.RunDataLakeAsync(_sql,_ionAPI).Result;
+                    DataTable queryResults = DataLake.RunDataLakeAsync(_sql, _ionAPI).Result;
 
                     if (queryResults == null)
                     {

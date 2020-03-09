@@ -1,8 +1,8 @@
 {
   "profiles": {
     "Data Lake Export": {
-      "commandName": "Project"
-    
+      "commandName": "Project",
+      "commandLineArgs": "SQL=\"Samples\\Basic.sql\" Filename=\"C:\\temp\\DLExport.pdf\"  PDF=0 Connection=\"%DL_Connection_File%\" Title=\"Test Query\""
     }
   }
 }

@@ -63,8 +63,6 @@
       <Version>3.10.10</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="PDFsharp-MigraDoc">
-      <Version>1.50.5147</Version>
-    </PackageReference>
+    <PackageReference Include="PDFsharp-MigraDoc" Version="1.50.5147" />
   </ItemGroup>
 </Project>

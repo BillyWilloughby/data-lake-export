@@ -1,19 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Net.Http;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Flurl;
 using Flurl.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Data;
+using System.IO;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Data_Lake_Export.DLExport
 {
-    public  class DataLake
+    public class DataLake
     {
         public static async Task<DataTable> RunDataLakeAsync(string sqlFile, IONAPI ionAPI)
         {
@@ -43,7 +41,8 @@ namespace Data_Lake_Export.DLExport
                         goto QuickDataLoad;
                     }
                 }
-                catch (Exception ex) { //Do nothing if lookup failes
+                catch (Exception ex)
+                { //Do nothing if lookup failes
                 }
             }
 
@@ -274,5 +273,5 @@ namespace Data_Lake_Export.DLExport
             }
         }
 
- }
+    }
 }

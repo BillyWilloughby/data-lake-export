@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Xml.Serialization;
 
 
 
@@ -22,7 +21,7 @@ public class IONAPI
 
     private readonly string OAuth2TokenEndpoint;
     private readonly string OAuth2TokenRevocationEndpoint;
- 
+
     private TokenClient _oauth2;
 
     private DateTime expireTime = new DateTime(1900, 1, 1);
@@ -43,9 +42,9 @@ public class IONAPI
         _oa = oa;
         OAuth2TokenEndpoint = _pu + "" + _ot;
         OAuth2TokenRevocationEndpoint = _pu + "" + _or;
- 
+
         _oauth2 = new TokenClient(OAuth2TokenEndpoint, ci, cs);
- 
+
     }
 
     private void storeToken(string token)
@@ -54,7 +53,7 @@ public class IONAPI
         using (FileStream fs = new FileStream(tokenFile, FileMode.OpenOrCreate))
         {
 
-            BinaryFormatter  xs = new BinaryFormatter ();
+            BinaryFormatter xs = new BinaryFormatter();
             xs.Serialize(fs, token);
 
             fs.Close();
@@ -79,7 +78,7 @@ public class IONAPI
         using (FileStream fs = new FileStream(tokenFile, FileMode.Open))
         {
 
-            BinaryFormatter  xs = new BinaryFormatter ();
+            BinaryFormatter xs = new BinaryFormatter();
             thisToken = (string)xs.Deserialize(fs);
 
             fs.Close();
