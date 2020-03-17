@@ -182,7 +182,7 @@ namespace Data_Lake_Export.DLExport
             QuickDataLoad:
 
             DataTable thisData = new DataTable("ExportMI");
-            string[] colStrings;
+
             int recordID = 0;
             int columnID = 0;
             if (Status.Equals("FAILED"))

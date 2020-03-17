@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "data-lake-export-core": {
+      "commandName": "Project",
+      "commandLineArgs": "SQL=\"c:\\temp\\Basic.sql\" Filename=\"C:\\temp\\DLExport.xlsx\"  PDF=0 Connection=\"%DL_ConnectionFile%\" Title=\"Test Query\" Compass=%DL_CompassURL%"
+    }
+  }
+}
