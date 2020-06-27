@@ -108,7 +108,7 @@ namespace Data_Lake_Export
 
                         if (value.Contains("%"))
                         {   //Workaround for VS not expanding variables in debug
-                            value = Environment.GetEnvironmentVariable(value.Replace("%", ""));
+                            value = Environment.GetEnvironmentVariable(value.Replace("%", ""),EnvironmentVariableTarget.User);
                         }
 
                         switch (parameter.ToUpper())

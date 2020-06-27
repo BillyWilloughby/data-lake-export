@@ -1,0 +1,14 @@
+/.vs/Data Lake Export
+/Data Lake Export/bin
+/Data Lake Export/obj
+/packages
+*.7z
+*.tmp
+*.user
+/Publish
+/PublishFramework
+/obj
+/bin/Release/netcoreapp3.1
+/.vs/data-lake-export-core
+/bin
+/.vs
