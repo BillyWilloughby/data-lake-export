@@ -10,3 +10,4 @@
 /obj
 /bin/Release/netcoreapp3.1
 /.vs/data-lake-export-core
+/bin
