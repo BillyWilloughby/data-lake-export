@@ -46,7 +46,13 @@ namespace Data_Lake_Export.DLExport
                 }
             }
 
-            string bearerToken = ionAPI.getBearerToken();
+            string bearerToken = ionAPI.GetBearerAuthorization();
+
+            if (bearerToken == null)
+            {
+                Console.WriteLine("Error getting IONAPI Token: "  + ionAPI.LastMessage);
+                Environment.Exit(-23);
+            }
 
             Console.WriteLine("Loading Compass SQL File : " + sqlFile);
 
@@ -66,7 +72,7 @@ namespace Data_Lake_Export.DLExport
             Task<HttpResponseMessage> query =
                 Program._compassURL
                     .AppendPathSegment("/v1/compass/jobs")
-                    .SetQueryParam("resultFormat", "application/x-ndjson")
+                    .SetQueryParam("resultFormat", "application/json")
                     .WithOAuthBearerToken(bearerToken)
                     .WithHeader("User-Agent", "DataMover")
                     .WithHeader("Accept-Encoding", "deflate")
@@ -164,7 +170,7 @@ namespace Data_Lake_Export.DLExport
                     .WithHeader("Cache-Control", "no-cache")
                     .WithHeader("User-Agent", "DataMover")
                     .WithHeader("Accept-Encoding", "Deflate")
-                    .WithHeader("Accept", "application/x-ndjson")
+                    .WithHeader("Accept", "application/json")
                     .WithTimeout(600)
                     .AllowAnyHttpStatus()
                     .GetAsync();

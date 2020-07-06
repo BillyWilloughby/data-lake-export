@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>data_lake_export_core</RootNamespace>
+    <RootNamespace>data_lake_export</RootNamespace>
     <AssemblyName>Data Lake Export</AssemblyName>
     <StartupObject>Data_Lake_Export.DLExport.Program</StartupObject>
     <Version>1.2020.03.0901</Version>
@@ -14,6 +14,10 @@
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <PackageIcon>database_down.ico</PackageIcon>
     <PackageIconUrl />
+    <ApplicationIcon>datalakeexport.ico</ApplicationIcon>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>BVW 2019 - No Tree.pfx</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -27,9 +31,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="EPPlus" Version="5.0.3" />
+    <PackageReference Include="EPPlus" Version="5.2.0" />
     <PackageReference Include="Flurl.Http" Version="2.4.2" />
-    <PackageReference Include="IdentityModel" Version="3.10.10" />
+    <PackageReference Include="IdentityModel" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
