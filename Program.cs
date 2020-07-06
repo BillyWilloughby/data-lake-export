@@ -461,7 +461,7 @@ namespace Data_Lake_Export
                     ExcelPackage.LicenseContext = LicenseContext.Commercial;
                     using (ExcelPackage p = new ExcelPackage())
                     {
-                        p.Workbook.Properties.Author = "Billy Willoughby";
+                        p.Workbook.Properties.Author = "Data Lake Export";
                         p.Workbook.Properties.Title = _title;
                         p.Workbook.Properties.Company = "";
 

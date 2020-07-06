@@ -1,4 +1,3 @@
-/.vs/Data Lake Export
 /Data Lake Export/bin
 /Data Lake Export/obj
 /packages
@@ -8,6 +7,6 @@
 /Publish
 /PublishFramework
 /obj
-/bin/Release/netcoreapp3.1
-/.vs/data-lake-export-core
+
 /bin
+/.vs
