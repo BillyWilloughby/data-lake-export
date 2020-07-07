@@ -34,6 +34,7 @@
     <PackageReference Include="EPPlus" Version="5.2.0" />
     <PackageReference Include="Flurl.Http" Version="2.4.2" />
     <PackageReference Include="IdentityModel" Version="4.3.0" />
+    <PackageReference Include="PdfSharp.MigraDoc.Standard" Version="1.51.12" />
   </ItemGroup>
 
   <ItemGroup>
