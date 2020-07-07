@@ -18,11 +18,10 @@ namespace Data_Lake_Export.DLExport
             string responseBody;
             string Status;
             dynamic columnTypes;
-            bool quickSave;
-            dynamic dyn;
+            dynamic dynDataReturn;
             string SQL = "";
 
-            Boolean.TryParse(Environment.GetEnvironmentVariable("DL_QuickDataTable"), out quickSave);
+            Boolean.TryParse(Environment.GetEnvironmentVariable("DL_QuickDataTable"), out bool quickSave);
 
             if (quickSave && File.Exists("DL_QuickDataTable.tmp"))
             {
@@ -35,14 +34,15 @@ namespace Data_Lake_Export.DLExport
                     if (SQL.Equals(File.ReadAllText(sqlFile, Encoding.UTF8)))
                     {
 
-                        dyn = JsonConvert.DeserializeObject(columnTypes);
-                        columnTypes = dyn.columns;
+                        dynDataReturn = JsonConvert.DeserializeObject(columnTypes);
+                        columnTypes = dynDataReturn.columns;
                         Status = "Quick";
                         goto QuickDataLoad;
                     }
                 }
                 catch (Exception ex)
-                { //Do nothing if lookup failes
+                { //Do nothing if lookup fails
+                    Console.WriteLine("Warning: " + ex.Message);
                 }
             }
 
@@ -50,7 +50,7 @@ namespace Data_Lake_Export.DLExport
 
             if (bearerToken == null)
             {
-                Console.WriteLine("Error getting IONAPI Token: "  + ionAPI.LastMessage);
+                Console.WriteLine("Error getting IONAPI Token: " + ionAPI.LastMessage);
                 Environment.Exit(-23);
             }
 
@@ -70,7 +70,7 @@ namespace Data_Lake_Export.DLExport
             Console.WriteLine("Calling Compass API...");
 
             Task<HttpResponseMessage> query =
-                Program._compassURL
+                Program.CompassURL
                     .AppendPathSegment("/v1/compass/jobs")
                     .SetQueryParam("resultFormat", "application/json")
                     .WithOAuthBearerToken(bearerToken)
@@ -89,16 +89,16 @@ namespace Data_Lake_Export.DLExport
 
             responseBody = await query.ReceiveString();
 
-            dyn = JsonConvert.DeserializeObject(responseBody);
+            dynDataReturn = JsonConvert.DeserializeObject(responseBody);
 
-            Status = dyn.status;
-            string Location = dyn.location;
-            string queryID = dyn.queryId;
+            Status = dynDataReturn.status;
+            string Location = dynDataReturn.location;
+            string queryID = dynDataReturn.queryId;
 
-            Console.Write("Compass API: " + dyn.status);
+            Console.Write("Compass API: " + dynDataReturn.status);
 
             query =
-                Program._compassURL
+                Program.CompassURL
                     .AppendPathSegment("/v1/compass/jobs/" + queryID + "/status", false)
                     .SetQueryParam("timeout", "1")
                     .WithOAuthBearerToken(bearerToken)
@@ -116,15 +116,15 @@ namespace Data_Lake_Export.DLExport
 
             responseBody = await query.ReceiveString();
 
-            dyn = JsonConvert.DeserializeObject(responseBody);
+            dynDataReturn = JsonConvert.DeserializeObject(responseBody);
 
-            Status = dyn.status;
+            Status = dynDataReturn.status;
 
             int loops = 0;
             while (!Status.Equals("FINISHED") && !Status.Equals("FAILED"))
             {
                 query =
-                    Program._compassURL
+                    Program.CompassURL
                         .AppendPathSegment("/v1/compass/jobs/" + queryID + "/status", false)
                         .SetQueryParam("timeout", "1")
                         .WithOAuthBearerToken(bearerToken)
@@ -141,14 +141,14 @@ namespace Data_Lake_Export.DLExport
 
                 responseBody = await query.ReceiveString();
 
-                dyn = JsonConvert.DeserializeObject(responseBody);
-                if (dyn.status != Status)
+                dynDataReturn = JsonConvert.DeserializeObject(responseBody);
+                if (dynDataReturn.status != Status)
                 {
                     Console.WriteLine("");
-                    Console.Write("Compass API: " + dyn.status);
+                    Console.Write("Compass API: " + dynDataReturn.status);
                 }
 
-                Status = dyn.status;
+                Status = dynDataReturn.status;
 
                 System.Threading.Thread.Sleep(1000);
                 Console.Write(".");
@@ -156,14 +156,14 @@ namespace Data_Lake_Export.DLExport
             }
             Console.WriteLine("");
 
-            columnTypes = dyn.columns;
+            columnTypes = dynDataReturn.columns;
             if (quickSave)
                 File.WriteAllText("DL_QuickDataColumns.tmp", responseBody);
 
             Console.WriteLine("Result ID  : " + queryID + "");
 
             query =
-                Program._compassURL
+                Program.CompassURL
                     .AppendPathSegment("/v1/compass/jobs/" + queryID + "/result", false)
                     .WithOAuthBearerToken(bearerToken)
                     .WithHeader("Connection", "keep-alive")
@@ -189,73 +189,24 @@ namespace Data_Lake_Export.DLExport
 
             DataTable thisData = new DataTable("ExportMI");
 
-            int recordID = 0;
-            int columnID = 0;
             if (Status.Equals("FAILED"))
             {
                 Console.WriteLine("Compass API: " + responseBody);
                 return null;
             }
 
-
             var jsonReader = new JsonTextReader(new StringReader(responseBody))
             {
                 SupportMultipleContent = true // This is important!
             };
 
-            var jsonSerializer = new JsonSerializer();
+            thisData = JObject.Parse(responseBody)["data"].ToObject<DataTable>();
 
-
-            //Return Results
-            Console.WriteLine("Parsing Results to Data Table...");
-            while (jsonReader.Read())
-            {
-                columnID = 0;
-                dyn = jsonSerializer.Deserialize(jsonReader);
-
-                if (recordID == 0)
-                {
-                    foreach (JProperty property in dyn)
-                    {
-                        thisData.Columns.Add(property.Name);
-                        thisData.Columns[columnID].DataType = getTypeFromString(columnTypes[columnID].datatype.Value);
-                        columnID++;
-                    }
-                    columnID = 0;
-                }
-
-                DataRow thisDataRow = thisData.NewRow();
-                foreach (JProperty property in dyn)
-                {
-
-
-                    if (thisData.Columns[columnID].DataType == typeof(long)
-                        && property.Value.ToString().IndexOf('.') > 0
-                    )
-                    {
-                        thisDataRow[columnID] =
-                            Convert.ChangeType(
-                                property.Value.ToString().Substring(0,
-                                    property.Value.ToString().IndexOf('.'))
-                                , thisData.Columns[columnID].DataType);
-                    }
-                    else
-                    {
-                        thisDataRow[columnID] =
-                            Convert.ChangeType(property.Value.ToString(), thisData.Columns[columnID].DataType);
-                    }
-                    columnID++;
-                }
-
-                thisData.Rows.Add(thisDataRow);
-
-                recordID++;
-            }
             return thisData;
 
         }
 
-        private static Type getTypeFromString(string typeName)
+        private static Type GetTypeFromString(string typeName)
         {
             switch (typeName.ToUpper())
             {

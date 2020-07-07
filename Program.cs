@@ -41,15 +41,15 @@ namespace Data_Lake_Export
             //private static double _intMajorWidth = 0; //Used to hold the overall width of PDF
             private static IONAPI _ionAPI;
             private static string _proxy;
-            public static string _compassURL { get; set; }
+            public static string CompassURL { get; set; }
 
             static void Main(string[] args)
             {
                 try
                 {
-                    parseCommandLineParameters(args);
+                    ParseCommandLineParameters(args);
 
-                    loadIONAPI(_connectionFile);
+                    LoadIONAPI(_connectionFile);
 
                     //Setup Proxy if listed on command line
                     if (_proxy != null && !_proxy.Equals(""))
@@ -81,7 +81,7 @@ namespace Data_Lake_Export
 
                     if (_renderAsCSV)//CSV Option
                     {
-                        Environment.Exit(exportToCSV(_csvFL, _csvDL, queryResults));
+                        Environment.Exit(ExportToCSV(_csvFL, _csvDL, queryResults));
                     }
 
                     //Default, Excel Option
@@ -96,7 +96,7 @@ namespace Data_Lake_Export
 
             }
 
-            private static void parseCommandLineParameters(string[] args)
+            private static void ParseCommandLineParameters(string[] args)
             {
 
                 foreach (string thisParameter in args)
@@ -108,7 +108,7 @@ namespace Data_Lake_Export
 
                         if (value.Contains("%"))
                         {   //Workaround for VS not expanding variables in debug
-                            value = Environment.GetEnvironmentVariable(value.Replace("%", ""),EnvironmentVariableTarget.User);
+                            value = Environment.GetEnvironmentVariable(value.Replace("%", ""), EnvironmentVariableTarget.User);
                         }
 
                         switch (parameter.ToUpper())
@@ -159,7 +159,7 @@ namespace Data_Lake_Export
                                 break;
 
                             case "COMPASS":
-                                _compassURL = value;
+                                CompassURL = value;
                                 break;
 
                             case "FILENAME":
@@ -198,7 +198,7 @@ namespace Data_Lake_Export
                                         _columnSizeOverrides[intX] = -1;
                                     }
 
-                                    intX = intX + 1;
+                                    intX += 1;
                                 }
 
                                 break;
@@ -211,26 +211,26 @@ namespace Data_Lake_Export
                                 switch (value)
                                 {
                                     case "LF":
-                                        _EOLOverride = new char[1];
-                                        _EOLOverride[0] = ((char)10);
+                                        EOLOverride = new char[1];
+                                        EOLOverride[0] = ((char)10);
 
                                         break;
 
                                     case "CR":
-                                        _EOLOverride = new char[1];
-                                        _EOLOverride[0] = ((char)13);
+                                        EOLOverride = new char[1];
+                                        EOLOverride[0] = ((char)13);
                                         break;
 
                                     case "LFCR":
-                                        _EOLOverride = new char[2];
-                                        _EOLOverride[0] = ((char)10);
-                                        _EOLOverride[1] = ((char)13);
+                                        EOLOverride = new char[2];
+                                        EOLOverride[0] = ((char)10);
+                                        EOLOverride[1] = ((char)13);
                                         break;
 
                                     case "CRLF":
-                                        _EOLOverride = new char[2];
-                                        _EOLOverride[0] = ((char)13);
-                                        _EOLOverride[1] = ((char)10);
+                                        EOLOverride = new char[2];
+                                        EOLOverride[0] = ((char)13);
+                                        EOLOverride[1] = ((char)10);
 
                                         break;
                                 }
@@ -240,36 +240,42 @@ namespace Data_Lake_Export
                     }
                 }
 
-                if (_EOLOverride == null)
+                if (EOLOverride == null)
                 {
-                    _EOLOverride = new char[2];
-                    _EOLOverride[0] = ((char)13);
-                    _EOLOverride[1] = ((char)10);
+                    EOLOverride = new char[2];
+                    EOLOverride[0] = ((char)13);
+                    EOLOverride[1] = ((char)10);
                 }
 
 
-                if (_sql is null || _filename is null || _title is null || _connectionFile is null || _compassURL is null
+                if (_sql is null || _filename is null || _title is null || _connectionFile is null || CompassURL is null
                 || args.Length == 0)
                 {
-                    Console.WriteLine("DataMover");
-                    Console.WriteLine("©2006 - 2016 Billy Willoughby");
+                    Console.WriteLine("Data Lake Export (*Formally part of DataMover)");
+                    Console.WriteLine("©2006 - 2020 Billy Willoughby");
+                    Console.WriteLine("");
                     Console.WriteLine("Syntax:");
                     Console.WriteLine("\tSQL=\"File path to Compass Query\"");
                     Console.WriteLine("\tFilename=\"some output.xlsx\"");
                     Console.WriteLine("\tConnection=\"File path to ION API Authentication file\"");
                     Console.WriteLine("\tCompass=\"Compass URL\"");
                     Console.WriteLine("\tTitle=\"Title Information in Excel\" (Make sure Excel Compatible)");
+                    Console.WriteLine("");
                     Console.WriteLine("All Parameters above are mandatory.  Please set parameters and call again.");
+                    Console.WriteLine("");
                     Console.WriteLine("Optional Parameters:");
-                    Console.WriteLine("PDF=#");
-                    Console.WriteLine("\t 0 = Autosize PDF Form to document ");
-                    Console.WriteLine("\t 1 = Letter, Landscape forced ");
-                    Console.WriteLine("\t 2 = Legal, Landscape forced ");
-                    Console.WriteLine("\t 3 = Legal, Landscape forced, 8 point font ");
-                    Console.WriteLine("\t 4 = Letter, Landscape forced, 8 point font ");
+                    Console.WriteLine("");
+                    //Console.WriteLine("PDF=#");
+                    //Console.WriteLine("\t 0 = Autosize PDF Form to document ");
+                    //Console.WriteLine("\t 1 = Letter, Landscape forced ");
+                    //Console.WriteLine("\t 2 = Legal, Landscape forced ");
+                    //Console.WriteLine("\t 3 = Legal, Landscape forced, 8 point font ");
+                    //Console.WriteLine("\t 4 = Letter, Landscape forced, 8 point font ");
+                    Console.WriteLine("");
                     Console.WriteLine("Columns = Array of values");
                     Console.WriteLine("\t Example: COLUMNS=\",,,1,1.5,2,\"");
                     Console.WriteLine("\t Used for force the size of each column in a document");
+                    Console.WriteLine("");
                     Console.WriteLine("CSV=#");
                     Console.WriteLine("\tCreate a Flat File");
                     Console.WriteLine("\tOption 1: Column = tab, Field = single quote");
@@ -280,6 +286,7 @@ namespace Data_Lake_Export
                     Console.WriteLine("\tOption 6: Column = comma, Field = nothing");
                     Console.WriteLine("\tOption 7: Column = nothing, Field = nothing");
                     Console.WriteLine("\tOption 8: Column = pipe, Field = nothing");
+                    Console.WriteLine("");
                     Console.WriteLine("EOL=\"<Value>\"");
                     Console.WriteLine("\tOverride the default environment linefeed text");
                     Console.WriteLine("\tLF = Char(10)");
@@ -291,7 +298,7 @@ namespace Data_Lake_Export
 
             }
 
-            private static void loadIONAPI(string connection)
+            private static void LoadIONAPI(string connection)
             {
                 Console.WriteLine("Loading IONAPI configuration...");
 
@@ -311,9 +318,9 @@ namespace Data_Lake_Export
                 _ionAPI = new IONAPI(application, ci, cs, pu, saak, sask, oa, ot, or);
             }
 
-            public static char[] _EOLOverride { get; set; }
+            public static char[] EOLOverride { get; set; }
 
-            private static int exportToCSV(string fl, string dl, DataTable queryResults)
+            private static int ExportToCSV(string fl, string dl, DataTable queryResults)
             {
                 try
                 {
@@ -339,18 +346,18 @@ namespace Data_Lake_Export
                         }
                         foreach (string thisColumn in rowHeaders)
                         {
-                            thisRow = thisRow + fl + escape(thisDataRow[intX]) + fl + dl;
-                            intX = intX + 1;
+                            thisRow = thisRow + fl + Escape(thisDataRow[intX]) + fl + dl;
+                            intX += 1;
                         }
-                        rowIndex = rowIndex + 1;
+                        rowIndex += 1;
 
-                        if (_EOLOverride.Length == 1)
+                        if (EOLOverride.Length == 1)
                         {
-                            thisFile.Append(thisRow.Substring(0, thisRow.Length - _csvDL.Length) + _EOLOverride[0]);
+                            thisFile.Append(thisRow.Substring(0, thisRow.Length - _csvDL.Length) + EOLOverride[0]);
                         }
                         else
                         {
-                            thisFile.Append(thisRow.Substring(0, thisRow.Length - _csvDL.Length) + _EOLOverride[0] + _EOLOverride[1]);
+                            thisFile.Append(thisRow.Substring(0, thisRow.Length - _csvDL.Length) + EOLOverride[0] + EOLOverride[1]);
                         }
 
                     }
@@ -369,7 +376,7 @@ namespace Data_Lake_Export
                 }
             }
 
-            private static string escape(object getValue)
+            private static string Escape(object getValue)
             {
                 string thisValue = getValue.ToString();
                 if (_csvFL.Length > 0)
@@ -537,7 +544,7 @@ namespace Data_Lake_Export
                                 foreach (string thisColumn in rowHeaders)
                                 {
                                     ws.Cells[rowIndex + 1, colIndex + 1].Value = thisDataRow.ItemArray[colIndex].ToString();
-                                    colIndex = colIndex + 1;
+                                    colIndex += 1;
                                 }
                                 //Console.Write("\rRecord {0}...          ", rowIndex);
                                 rowIndex++;
@@ -934,10 +941,10 @@ namespace Data_Lake_Export
         }
     }
 
-    public class tokenHolder
+    public class TokenHolder
     {
-        public string bearerToken { get; set; }
-        public string refreshToken { get; set; }
-        public DateTime expiresTime { get; set; }
+        public string BearerToken { get; set; }
+        public string RefreshToken { get; set; }
+        public DateTime ExpiresTime { get; set; }
     }
 }

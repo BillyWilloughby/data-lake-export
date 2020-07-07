@@ -10,7 +10,7 @@ using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 
 public class IONAPI
 {
-    private string _application;
+    private readonly string _application;
     public readonly string _ci;
     public readonly string _cs;
     public readonly string _pu;
@@ -20,6 +20,7 @@ public class IONAPI
     public readonly string _or;
     public readonly string _oa;
 
+    private readonly HttpClient _oauth2Http;
     private readonly string OAuth2TokenEndpoint;
     private readonly string OAuth2TokenRevocationEndpoint;
     private readonly string OAuth2AuthorizationEndpoint;
@@ -31,7 +32,7 @@ public class IONAPI
     private DateTime expireTime = new DateTime(1900, 1, 1);
     private TokenResponse _token;
     private string _sToken;
-    private HttpClient _oauth2Http;
+    
     private readonly Object _tokenLock = new Object();
     private string _lastMessage;
 
@@ -165,14 +166,16 @@ public class IONAPI
             }
 
             /*Load a new token*/
-            PasswordTokenRequest request = new PasswordTokenRequest();
-            request.Address = OAuth2TokenEndpoint;
-            request.ClientId = _ci;
-            request.ClientSecret = _cs;
-            request.AuthorizationHeaderStyle = BasicAuthenticationHeaderStyle.Rfc2617;
-            request.ClientCredentialStyle = ClientCredentialStyle.AuthorizationHeader;
-            request.UserName = _saak;
-            request.Password = _sask;
+            PasswordTokenRequest request = new PasswordTokenRequest
+            {
+                Address = OAuth2TokenEndpoint,
+                ClientId = _ci,
+                ClientSecret = _cs,
+                AuthorizationHeaderStyle = BasicAuthenticationHeaderStyle.Rfc2617,
+                ClientCredentialStyle = ClientCredentialStyle.AuthorizationHeader,
+                UserName = _saak,
+                Password = _sask
+            };
 
             _token = _oauth2Http.RequestPasswordTokenAsync(request).Result;
 
@@ -198,11 +201,13 @@ public class IONAPI
     {
         Console.WriteLine(refreshToken);
 
-        RefreshTokenRequest request = new RefreshTokenRequest();
-        request.Address = OAuth2TokenEndpoint;
-        request.ClientId = _ci;
-        request.ClientSecret = _cs;
-        request.RefreshToken = refreshToken;
+        RefreshTokenRequest request = new RefreshTokenRequest
+        {
+            Address = OAuth2TokenEndpoint,
+            ClientId = _ci,
+            ClientSecret = _cs,
+            RefreshToken = refreshToken
+        };
 
         return _oauth2Http.RequestRefreshTokenAsync(request).Result;
     }

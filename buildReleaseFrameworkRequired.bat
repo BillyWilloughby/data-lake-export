@@ -13,9 +13,9 @@ echo.
 echo Starting Build Windows x86
 dotnet publish -c Release -r "win-x86" --self-contained=false -p:PublishSingleFile=true
 
-rmdir PublishFramework /S /Q
+rmdir PublishFrameworkRequired /S /Q
 
-xcopy bin\Release\netcoreapp3.1\win-x64\publish\*.* PublishFramework\win-x64\
-xcopy bin\Release\netcoreapp3.1\win-x86\publish\*.* PublishFramework\win-x86\
-xcopy bin\Release\netcoreapp3.1\osx-x64\publish\*.* PublishFramework\osx-x64\
-xcopy bin\Release\netcoreapp3.1\linux-x64\publish\*.* PublishFramework\linux-x64\
+xcopy bin\Release\netcoreapp3.1\win-x64\publish\*.* PublishFrameworkRequired\win-x64\
+xcopy bin\Release\netcoreapp3.1\win-x86\publish\*.* PublishFrameworkRequired\win-x86\
+xcopy bin\Release\netcoreapp3.1\osx-x64\publish\*.* PublishFrameworkRequired\osx-x64\
+xcopy bin\Release\netcoreapp3.1\linux-x64\publish\*.* PublishFrameworkRequired\linux-x64\

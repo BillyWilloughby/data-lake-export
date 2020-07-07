@@ -11,3 +11,5 @@
 /bin
 /.vs
 *.pfx
+/PublishFrameworkRequired
+/PublishStandAlone
