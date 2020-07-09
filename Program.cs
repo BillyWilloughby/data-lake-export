@@ -265,8 +265,12 @@ namespace Data_Lake_Export
                 if (_sql is null || _filename is null || _title is null || _connectionFile is null || CompassURL is null
                 || args.Length == 0)
                 {
-                    Console.WriteLine("Data Lake Export (*Formally part of DataMover)");
-                    Console.WriteLine("©2006 - 2020 Billy Willoughby");
+                    Console.WriteLine("Data Lake Export");
+                    Console.WriteLine("Copyright 2020 Billy Willoughby");
+                    Console.WriteLine("");
+                    Console.WriteLine("Licensed under the Apache License, Version 2.0 (the \"License\")");
+                    Console.WriteLine("you may not use this file except in compliance with the License.");
+                    Console.WriteLine("See License.txt file for further details.");
                     Console.WriteLine("");
                     Console.WriteLine("Syntax:");
                     Console.WriteLine("\tSQL=\"File path to Compass Query\"");

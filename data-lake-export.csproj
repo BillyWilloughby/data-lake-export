@@ -4,13 +4,13 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>data_lake_export</RootNamespace>
-    <AssemblyName>Data Lake Export</AssemblyName>
+    <AssemblyName>DataLakeExport</AssemblyName>
     <StartupObject>Data_Lake_Export.DLExport.Program</StartupObject>
-    <Version>1.2020.03.0901</Version>
+    <Version>0.7.2020.0702</Version>
     <Authors>Billy Willoughby</Authors>
     <Company />
-    <Description>This program allows calling of Compass for the Infor Data Lake and returning the results as an XLSX or CSV file.</Description>
-    <Copyright></Copyright>
+    <Description>This program allows calling of Compass for the Infor Data Lake and returning the results as an XLSX, PDF, or CSV file.</Description>
+    <Copyright>Billy Willoughby 2020</Copyright>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <PackageIcon>database_down.ico</PackageIcon>
     <PackageIconUrl />
@@ -18,6 +18,10 @@
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>BVW 2019 - No Tree.pfx</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
+    <Product>Data Lake Export</Product>
+    <PackageProjectUrl>https://github.com/BillyWilloughby/data-lake-export</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/BillyWilloughby/data-lake-export.git</RepositoryUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -45,6 +49,7 @@
     <None Include="License.txt">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
