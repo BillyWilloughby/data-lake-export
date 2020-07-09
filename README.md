@@ -66,12 +66,11 @@ In the Samples folder in the source code, you will find some sample SQL queries 
 	 - Set to 6 to set the Column delimiter to comma and the field delimiter to nothing
 	 - Set to 7 to set the Column delimiter to nothing and the field delimiter to nothing
 	 - Set to 8 to set the Column delimiter to pipe and the field delimiter to nothing
-
-EOL="<Value>"
-        Override the default environment linefeed text
-        LF = Char(10)
-        CR = Char(13)
-        LF, CR, CRLF, and LFCR are valid options
+ - EOL="<Value>"
+ 	- Override the default environment linefeed text
+ 	- LF = Char(10)
+ 	- CR = Char(13)
+ 	- LF, CR, CRLF, and LFCR are valid options
 
 ### Sample Syntax
 
