@@ -28,5 +28,5 @@ top 10000
   join CSYTAB CT3 on CT3.CONO = OD.CONO and CT3.STCO = 'ITGR' and CT3.STKY = ITGR and CT3.deleted = 'false'
   join CRPDLN PL  on  PL.CONO = OD.CONO and PL.PDLN = MM.PDLN and PL.deleted = 'false'
   left join MITPOP MP on MP.ALWQ = 'UPC' and MP.CONO = OD.CONO and MP.ITNO = OD.ITNO and OD.deleted = 'false'
-where OD.CONO = 100
+where OD.CONO = 080
 order by 1,2,3

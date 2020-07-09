@@ -23,7 +23,7 @@ sum(MB.AVAL) "Available Qty",
 sum(MB.ORQT) "On Order Qty"
 
 from MITBAL MB
-where MB.deleted = 'false'
+where MB.deleted = 'false' AND MB.CONO =  080
 GROUP BY MB.CONO, MB.DIVI, MB.WHLO, MB.ITNO
 ORDER BY MB.CONO, MB.DIVI, MB.WHLO, MB.ITNO) cteTest
 Order By 1
