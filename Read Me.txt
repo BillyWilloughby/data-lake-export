@@ -1,58 +1,106 @@
-﻿
-This is an application to run SQL against the Infor Data Lake and generate flat export files. 
+﻿Data Lake Export
+Data Lake Export is a small tool to allow the creation of files from the Infor© Data Lake SaaS product.
 
-It currently supports CSV, XLSX, and PDF formats in the current version. XML support will be added in the future.
+It uses the general SQL syntax supported by the Infor© Compass API to pull the information, and based on the command line options, generates a formatted Excel, PDF, or a CSV document. To connect to the Compass API requires an IONAPI© authorization file. This tool was specifically tested with Infor M3© in mind, but should work with any JSON data in the Data Lake.
 
-Original source created as DataMover in 2006.  
-This branch project has been updated to support report outputs and M3 Data Lake APIs.
-©2006 - 2020 Billy Willoughby
+Image of Workflow
 
-The default export is Excel XLSX files. 
+Usage
+Data Lake Export works by reading the query from a file, connecting to the Data Lake via ION API, and taking the result set and formatting it into the requested output document.
 
-This Product requires the .Net Framework version 4.8 to run.
+Quick Steps to Use:
 
-Several common uses have been listed in the Samples Folder.  The batch file in the Samples Folder requires
-the environment variables be setup for the Compass API URL and the ION API authentation file that is 
-generated when a connection authorization is created in ION API.  The environment variable %DL_CompassURL%
-should be set to the Compass URL you wish to connect to.  The environment variable %DL_ConnectionFile% 
-should be set to the path of the ION API file to use with Compass.
+Create an ION API Authorization file for Data Lake Export
+Prototype your query in the Compass Query tool in ION Desk
+Save the query in a file accessible by the application
+Run the command specifying the desired output type and filename
+An ION API authorization file to be created as a Backend Service for this application to use. Create the authorization file in the ION API application in IOS©, and save it to your local machine.
 
-Syntax Information:
-                  
-	Mandatory Syntax:
-		SQL="Full Path to SQL input file"
-		Filename="OutputFileName.xlsx"
-		Connection="ION API Connection file"
-		Compass="Compass URL"
-		Title="Title Information in Excel" (Make sure Excel Compatible)
+Write a sample query in Compass in ION Desk. For M3 data, a simple test would be to select something from the Item Master.
 
-	All Parameters above are mandatory. 
+Query: Select top 100 CONO, ITNO, FUDS from MITMAS order by CONO, ITNO
 
-	Optional Parameters:
-	PDF=#
-		 0 = Autosize PDF Form to document 
-		 1 = Letter, Landscape forced 
-		 2 = Legal, Landscape forced 
-		 3 = Legal, Landscape forced, 8 point font 
-		 4 = Letter, Landscape forced, 8 point font 
+After testing the query, save it on the computer where the Data Lake Export application can access it. With the query saved, and the authorization file saved, you’re ready to build a file.
 
-	Columns = Array of values
-		 Example: COLUMNS=",,,1,1.5,2,"
-		 Used for force the size of each column in a document
+Syntax Examples
+In the Samples folder in the source code, you will find some sample SQL queries and batch files to generate various file types. The samples use Windows Environment variables for the connection information. You will need to set these variables for your environment, or edit the files as needed.
 
-	CSV=#
-		Create a Flat File
-		Option 1: Column = tab, Field = single quote
-		Option 2: Column = comma, Field = single quote
-		Option 3: Column = tab, Field = double quote
-		Option 4: Column = comma, Field = double quote
-		Option 5: Column = tab, Field = nothing
-		Option 6: Column = comma, Field = nothing
-		Option 7: Column = nothing, Field = nothing
-		Option 8: Column = pipe, Field = nothing
+Required Parameters
+SQL
+Set to the filename containing the Compass / SQL query for the Data Lake.
+Filename
+Set to the file name you wish to create. This file will be deleted if it exists. The default file type is Excel© xlsx.
+Connection
+Set this to the filename of the IONAPI Authorization file used to connect to the Data Lake.
+Compass
+Set this to the URL for the Compass endpoint for the Infor IOS© environment you will be connecting to.
+Title
+Set this to the title of the document. Make sure the title is Excel compatible.
+Optional Parameters
+PDF
+Creates a PDF File
+Set to 0 to generate a PDF and set paper size based on data width
+Set to 1 to force to fit a letter landscape. This will truncate data that’s too wide.
+Set to 2 to force to fit a legal page, landscape. This will truncate data that’s too wide.
+Set to 3 to force to fit a legal page, landscape, 8 point font. This will truncate data that’s too wide.
+Set to 4 to force to fit a letter page, landscape, 8 point font. This will truncate data that’s too wide.
+CSV
+Create a Flat File
+Set to 1 to set the Column delimiter to tab and the field delimiter to single quote
+Set to 2 to set the Column delimiter to comma and the field delimiter to single quote
+Set to 3 to set the Column delimiter to tab and the field delimiter to double quote
+Set to 4 to set the Column delimiter to comma and the field delimiter to double quote
+Set to 5 to set the Column delimiter to tab and the field delimiter to nothing
+Set to 6 to set the Column delimiter to comma and the field delimiter to nothing
+Set to 7 to set the Column delimiter to nothing and the field delimiter to nothing
+Set to 8 to set the Column delimiter to pipe and the field delimiter to nothing
+EOL=""
+Override the default environment linefeed text
+LF = Char(10)
+CR = Char(13)
+LF, CR, CRLF, and LFCR are valid options
+Sample Syntax
+Create a PDF
 
-	EOL="<Value>"
-		Override the default environment linefeed text
-		LF = Char(10)
-		CR = Char(13)
-		LF, CR, CRLF, and LFCR are valid options
+DataLakeExport PDF=0 SQL=“basic.sql” Filename=“Sample Export.pdf” Connection=InforDEV.ionapi Title=“Basic Test Query” Compass=https://mingle-ionapi.inforcloudsuite.com/YOURENVIRONMENT_TRN/IONSERVICES/datalakeapi
+
+Create an Excel workbook
+
+DataLakeExport SQL=“basic.sql” Filename=“Sample Export.xlsx” Connection=InforDEV.ionapi Title=“Basic Test Query” Compass=https://mingle-ionapi.inforcloudsuite.com/YOURENVIRONMENT_TRN/IONSERVICES/datalakeapi
+
+Create a CSV flat file
+
+DataLakeExport CSV=3 SQL=“basic.sql” Filename=“Sample Export.csv” Connection="%DL_ConnectionFile%" Title=“Basic Test Query” Compass=%DL_CompassURL%
+
+Dependencies
+EPPlus by EPPlus Software AB
+This application uses the EPPlus library which is licensed via the PolyForm NonCommercial License. If you run the binary application, no license is required. EPPlus 5 uses a dual license model, with Polyform Noncommercial as the community license and a commercial license for commercial businesses. The commercial license can be purchased at epplussoftware.com.
+
+See https://epplussoftware.com/en/Home/LgplToPolyform for more details.
+
+Flurl by Todd Menier
+Flurl is licensed under the MIT License.
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions… (see link for full text)
+https://tldrlegal.com/license/mit-license
+
+IdentityModel by Dominick Baier, Brock Allen
+IdentityModel is licensed under the Apache 2.0 license.
+You may reproduce and distribute copies of the Work or Derivative Works thereof in any medium, with or without modifications, and in Source or Object form, provided that You meet the following conditions… (see link for full text)
+
+https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)#summary
+
+PdfSharp.MigraDoc.Standard by MigraDoc.Rendering
+PDFsharp and MigraDoc Foundation are published under the MIT License.
+
+See the PDFsharp License.
+See the MigraDoc Foundation License.
+
+PDFsharp and MigraDoc Foundation are Open Source and free to use
+Copy, modify and integrate the source code of PDFsharp and MigraDoc Foundation in your applications without restrictions at all
+This also applies to commercial products (both Open Source and Closed Source)
+PDFsharp and MigraDoc Foundation will remain Open Source and free to use even in the far future
+
+Data Lake Export Warranty
+Copyright © 2020 Billy Willoughby
+This program comes with ABSOLUTELY NO WARRANTY;
+This is free software, and you are welcome to redistribute it under certain conditions, see the License.txt file for further details.

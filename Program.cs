@@ -12,6 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// This application uses the EPPLus library which is licensed via the PolyForm NonCommercial License
+// If you run the binary application, no license is required.
+// EPPlus 5 uses a dual license model, with Polyform Noncommercial as the community license and a commercial
+// license for commercial businesses. The commercial license can be purchased at epplussoftware.com.
+//
+//            See https://epplussoftware.com/en/Home/LgplToPolyform for more details
+
 using OfficeOpenXml;
 using OfficeOpenXml.Table;
 using System.Drawing;
@@ -56,6 +63,7 @@ namespace Data_Lake_Export
             private static IONAPI _ionAPI;
             private static string _proxy;
             public static string CompassURL { get; set; }
+            public static char[] EOLOverride { get; set; }
 
             static void Main(string[] args)
             {
@@ -336,7 +344,6 @@ namespace Data_Lake_Export
                 _ionAPI = new IONAPI(application, ci, cs, pu, saak, sask, oa, ot, or);
             }
 
-            public static char[] EOLOverride { get; set; }
 
             private static int ExportToCSV(string fl, string dl, DataTable queryResults)
             {
@@ -959,10 +966,4 @@ namespace Data_Lake_Export
         }
     }
 
-    public class TokenHolder
-    {
-        public string BearerToken { get; set; }
-        public string RefreshToken { get; set; }
-        public DateTime ExpiresTime { get; set; }
-    }
 }

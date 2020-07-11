@@ -1,5 +1,6 @@
 
 
+
 # Data Lake Export
 
 Data Lake Export is a small tool to allow the creation of files from the Infor(c) Data Lake SaaS product.  
@@ -83,9 +84,35 @@ In the Samples folder in the source code, you will find some sample SQL queries 
 Create a CSV flat file
 > DataLakeExport CSV=3 SQL="basic.sql" Filename="Sample Export.csv" Connection="%DL_ConnectionFile%" Title="Basic Test Query" Compass=%DL_CompassURL%
 
+## Dependencies
+### EPPlus by EPPlus Software AB
+This application uses the EPPlus library which is licensed via the PolyForm NonCommercial License.  If you run the binary application, no license is required.  EPPlus 5 uses a dual license model, with Polyform Noncommercial as the community license and a commercial license for commercial businesses. The commercial license can be purchased at epplussoftware.com.
+
+See https://epplussoftware.com/en/Home/LgplToPolyform for more details.
+### Flurl by Todd Menier
+Flurl is licensed under the MIT License.
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions.... (see link for full text) 
+https://tldrlegal.com/license/mit-license
+
+### IdentityModel by Dominick Baier, Brock Allen
+IdentityModel is licensed under the Apache 2.0 license.
+You may reproduce and distribute copies of the Work or Derivative Works thereof in any medium, with or without modifications, and in Source or Object form, provided that You meet the following conditions... (see link for full text)
+
+https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)#summary
+### PdfSharp.MigraDoc.Standard by MigraDoc.Rendering
+PDFsharp and MigraDoc Foundation are published under the [MIT License](http://en.wikipedia.org/wiki/MIT_License "MIT License").  
+  
+See the [PDFsharp License](http://www.pdfsharp.net/PDFsharp_License.ashx "PDFsharp License").  
+See the [MigraDoc Foundation License](http://www.pdfsharp.net/MigraDoc_License.ashx "MigraDoc Foundation License").  
+  
+
+-   PDFsharp and MigraDoc Foundation are Open Source and free to use
+-   Copy, modify and integrate the source code of PDFsharp and MigraDoc Foundation in your applications without restrictions at all
+-   This also applies to commercial products (both Open Source and Closed Source)
+-   PDFsharp and MigraDoc Foundation will remain Open Source and free to use even in the far future
 
 
-## Warranty
+## Data Lake Export Warranty
 Copyright (C) 2020 Billy Willoughby
 This program comes with ABSOLUTELY NO WARRANTY;
 This is free software, and you are welcome to redistribute it under certain conditions, see the License.txt file for further details.

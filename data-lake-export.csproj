@@ -6,7 +6,7 @@
     <RootNamespace>data_lake_export</RootNamespace>
     <AssemblyName>DataLakeExport</AssemblyName>
     <StartupObject>Data_Lake_Export.DLExport.Program</StartupObject>
-    <Version>0.7.2020.0702</Version>
+    <Version>0.7.2020.7111</Version>
     <Authors>Billy Willoughby</Authors>
     <Company />
     <Description>This program allows calling of Compass for the Infor Data Lake and returning the results as an XLSX, PDF, or CSV file.</Description>
