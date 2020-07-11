@@ -81,7 +81,7 @@ In the Samples folder in the source code, you will find some sample SQL queries 
 > DataLakeExport SQL="basic.sql" Filename="Sample Export.xlsx" Connection=InforDEV.ionapi Title="Basic Test Query" Compass=https://mingle-ionapi.inforcloudsuite.com/YOURENVIRONMENT_TRN/IONSERVICES/datalakeapi
 
 Create a CSV flat file
-> DataLakeExport CSV=3 SQL="basic.sql" Filename="Sample Export.csv" Connection=%DL_ConnectionFile% Title="Basic Test Query" Compass=%DL_CompassURL%
+> DataLakeExport CSV=3 SQL="basic.sql" Filename="Sample Export.csv" Connection="%DL_ConnectionFile%" Title="Basic Test Query" Compass=%DL_CompassURL%
 
 
 
