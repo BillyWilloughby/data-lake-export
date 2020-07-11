@@ -6,7 +6,7 @@ Data Lake Export is a small tool to allow the creation of files from the Infor(c
 
 It uses the general SQL syntax supported by the Infor(c) Compass API to pull the information, and based on the command line options, generates a formatted Excel, PDF, or a CSV document.  To connect to the Compass API requires an IONAPI(c) authorization file.  This tool was specifically tested with Infor M3(c) in mind, but should work with any JSON data in the Data Lake.
 
-![Image of Workflow](https://billywilloughby.com/downloads/Data%20Lake%20Export%20Flow.png)
+![Image of Workflow](https://billywilloughby.com/dle/Data%20Lake%20Export%20Flow.png)
 
 <!--```mermaid-->
 <!--graph LR;-->
