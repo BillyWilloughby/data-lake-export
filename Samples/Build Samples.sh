@@ -6,14 +6,22 @@
 # $compass = The Environment URL for the COMPASS API
 echo
 
-executable=$(file DataLakeExport -b | grep executable -c)
+if [ "$1" = "" ]; then
+        echo "Please add the name of the SQL file you wish to execute as the first parameter"
+        echo "Example: ./DataLakeExport basic.sql"
+        echo
+        exit 2
+fi
 
-echo "Connecting to $compass"
-echo "Using Security token: $ionAPI"
+executable=$(file DataLakeExport -b | grep executable -c)
+echo "Processing SQL:            $1"
+echo "Connecting to environment: $compass"
+echo "Using security token:      $ionAPI"
 echo
 
 if [ "$executable" = "1" ]; then
-        echo Starting...
+        echo Starting Samples...
+        echo
 else
         echo DataLakeExport must be marked executable.
         echo Try
@@ -24,6 +32,7 @@ fi
 
 outputFilename=$1
 outputFilename="${outputFilename%%.*}_Sample"
+
 
 echo "Building XLSX..."
 ./DataLakeExport SQL=$1 Filename="$outputFilename.xlsx" Connection="$ionAPI" Title=Test\ Document Compass="$compass"
