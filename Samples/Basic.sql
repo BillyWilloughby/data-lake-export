@@ -1,1 +1,1 @@
-﻿Select top 10000 CONO, ITNO, FUDS from MITMAS WHERE CONO = 080 order by CONO, ITNO
+﻿select top 10000 CONO, ITNO, FUDS from MITMAS order by CONO, ITNO
