@@ -1,4 +1,4 @@
-﻿#!/bin/bash
+#!/bin/bash
 # The file DataLakeExport must be marked executable after extracting
 #
 # Please set the environment variables to use this sample. (or just put the information below)
