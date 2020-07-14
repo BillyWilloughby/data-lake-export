@@ -47,23 +47,22 @@ namespace Data_Lake_Export
             private static string _filename;
             private static string _title;
             private static string _connectionFile;
-            private static bool _renderAsPDF;
-            private static bool _renderAsCSV;
-            private static string _optionCSV = "0";
-            private static string _csvDL;
-            private static string _csvFL;
-            private static string _optionPDF = "0";
+            private static bool _renderAsPdf;
+            private static bool _renderAsCsv;
+            private static string _optionCsv = "0";
+            private static string _csvDl;
+            private static string _csvFl;
+            private static string _optionPdf = "0";
             private static double[] _columnSizeOverrides;
             private static string _rowBreak = "";
             private static int? _rowBreakLocation;
-            private static readonly string _status;
-            private static Shading shadingHeader = new Shading();
-            private static readonly Shading shadingAlternateRow = new Shading();
+            private static readonly Shading ShadingHeader = new Shading();
+            private static readonly Shading ShadingAlternateRow = new Shading();
             private static double _intMajorWidth = 0; //Used to hold the overall width of PDF
-            private static IONAPI _ionAPI;
+            private static IONAPI _ionApi;
             private static string _proxy;
             public static string CompassURL { get; set; }
-            public static char[] EOLOverride { get; set; }
+            public static char[] EolOverride { get; set; }
 
             static void Main(string[] args)
             {
@@ -71,7 +70,7 @@ namespace Data_Lake_Export
                 {
                     ParseCommandLineParameters(args);
 
-                    LoadIONAPI(_connectionFile);
+                    LoadIonapi(_connectionFile);
 
                     //Setup Proxy if listed on command line
                     if (_proxy != null && !_proxy.Equals(""))
@@ -82,7 +81,7 @@ namespace Data_Lake_Export
                         });
 
                     Console.WriteLine("Output will be written to: " + _filename);
-                    DataTable queryResults = DataLake.RunDataLakeAsync(_sql, _ionAPI).Result;
+                    DataTable queryResults = DataLake.RunDataLakeAsync(_sql, _ionApi).Result;
 
                     if (queryResults == null)
                     {
@@ -96,14 +95,14 @@ namespace Data_Lake_Export
                         System.IO.File.Delete(_filename);
                     }
 
-                    if (_renderAsPDF)//PDF Option
+                    if (_renderAsPdf)//PDF Option
                     {
-                        Environment.Exit(ExportToPDF(queryResults));
+                        Environment.Exit(ExportToPdf(queryResults));
                     }
 
-                    if (_renderAsCSV)//CSV Option
+                    if (_renderAsCsv)//CSV Option
                     {
-                        Environment.Exit(ExportToCSV(_csvFL, _csvDL, queryResults));
+                        Environment.Exit(ExportToCsv(_csvFl, _csvDl, queryResults));
                     }
 
                     //Default, Excel Option
@@ -136,41 +135,41 @@ namespace Data_Lake_Export
                         switch (parameter.ToUpper())
                         {
                             case "CSV":
-                                _renderAsCSV = true;
-                                _optionCSV = value;
-                                switch (_optionCSV)
+                                _renderAsCsv = true;
+                                _optionCsv = value;
+                                switch (_optionCsv)
                                 {
                                     case "1":
-                                        _csvDL = "\t";
-                                        _csvFL = "'";
+                                        _csvDl = "\t";
+                                        _csvFl = "'";
                                         break;
                                     case "2":
-                                        _csvDL = ",";
-                                        _csvFL = "'";
+                                        _csvDl = ",";
+                                        _csvFl = "'";
                                         break;
                                     case "3":
-                                        _csvDL = ",";
-                                        _csvFL = "\"";
+                                        _csvDl = ",";
+                                        _csvFl = "\"";
                                         break;
                                     case "4":
-                                        _csvDL = "\t";
-                                        _csvFL = "\"";
+                                        _csvDl = "\t";
+                                        _csvFl = "\"";
                                         break;
                                     case "5":
-                                        _csvDL = ",";
-                                        _csvFL = "";
+                                        _csvDl = ",";
+                                        _csvFl = "";
                                         break;
                                     case "6":
-                                        _csvDL = "\t";
-                                        _csvFL = "";
+                                        _csvDl = "\t";
+                                        _csvFl = "";
                                         break;
                                     case "7":
-                                        _csvDL = "";
-                                        _csvFL = "";
+                                        _csvDl = "";
+                                        _csvFl = "";
                                         break;
                                     case "8":
-                                        _csvDL = "|";
-                                        _csvFL = "";
+                                        _csvDl = "|";
+                                        _csvFl = "";
                                         break;
                                 }
 
@@ -201,8 +200,8 @@ namespace Data_Lake_Export
                                 break;
 
                             case "PDF":
-                                _renderAsPDF = true;
-                                _optionPDF = value;
+                                _renderAsPdf = true;
+                                _optionPdf = value;
                                 break;
 
                             case "COLUMNS":
@@ -233,26 +232,26 @@ namespace Data_Lake_Export
                                 switch (value)
                                 {
                                     case "LF":
-                                        EOLOverride = new char[1];
-                                        EOLOverride[0] = ((char)10);
+                                        EolOverride = new char[1];
+                                        EolOverride[0] = ((char)10);
 
                                         break;
 
                                     case "CR":
-                                        EOLOverride = new char[1];
-                                        EOLOverride[0] = ((char)13);
+                                        EolOverride = new char[1];
+                                        EolOverride[0] = ((char)13);
                                         break;
 
                                     case "LFCR":
-                                        EOLOverride = new char[2];
-                                        EOLOverride[0] = ((char)10);
-                                        EOLOverride[1] = ((char)13);
+                                        EolOverride = new char[2];
+                                        EolOverride[0] = ((char)10);
+                                        EolOverride[1] = ((char)13);
                                         break;
 
                                     case "CRLF":
-                                        EOLOverride = new char[2];
-                                        EOLOverride[0] = ((char)13);
-                                        EOLOverride[1] = ((char)10);
+                                        EolOverride = new char[2];
+                                        EolOverride[0] = ((char)13);
+                                        EolOverride[1] = ((char)10);
 
                                         break;
                                 }
@@ -262,11 +261,11 @@ namespace Data_Lake_Export
                     }
                 }
 
-                if (EOLOverride == null)
+                if (EolOverride == null)
                 {
-                    EOLOverride = new char[2];
-                    EOLOverride[0] = ((char)13);
-                    EOLOverride[1] = ((char)10);
+                    EolOverride = new char[2];
+                    EolOverride[0] = ((char)13);
+                    EolOverride[1] = ((char)10);
                 }
 
 
@@ -324,7 +323,7 @@ namespace Data_Lake_Export
 
             }
 
-            private static void LoadIONAPI(string connection)
+            private static void LoadIonapi(string connection)
             {
                 Console.WriteLine("Loading IONAPI configuration...");
 
@@ -341,11 +340,11 @@ namespace Data_Lake_Export
                 string sask = dyn.sask;
                 string oa = dyn.oa;
                 string ot = dyn.ot;
-                _ionAPI = new IONAPI(application, ci, cs, pu, saak, sask, oa, ot, or);
+                _ionApi = new IONAPI(application, ci, cs, pu, saak, sask, oa, ot, or);
             }
 
 
-            private static int ExportToCSV(string fl, string dl, DataTable queryResults)
+            private static int ExportToCsv(string fl, string dl, DataTable queryResults)
             {
                 try
                 {
@@ -376,13 +375,13 @@ namespace Data_Lake_Export
                         }
                         rowIndex += 1;
 
-                        if (EOLOverride.Length == 1)
+                        if (EolOverride.Length == 1)
                         {
-                            thisFile.Append(thisRow.Substring(0, thisRow.Length - _csvDL.Length) + EOLOverride[0]);
+                            thisFile.Append(thisRow.Substring(0, thisRow.Length - _csvDl.Length) + EolOverride[0]);
                         }
                         else
                         {
-                            thisFile.Append(thisRow.Substring(0, thisRow.Length - _csvDL.Length) + EOLOverride[0] + EOLOverride[1]);
+                            thisFile.Append(thisRow.Substring(0, thisRow.Length - _csvDl.Length) + EolOverride[0] + EolOverride[1]);
                         }
 
                     }
@@ -404,12 +403,12 @@ namespace Data_Lake_Export
             private static string Escape(object getValue)
             {
                 string thisValue = getValue.ToString();
-                if (_csvFL.Length > 0)
+                if (_csvFl.Length > 0)
                 {
 
-                    if (thisValue.Contains(_csvFL))
+                    if (thisValue.Contains(_csvFl))
                     {
-                        return _csvFL.Replace(_csvFL, _csvFL + _csvFL);
+                        return _csvFl.Replace(_csvFl, _csvFl + _csvFl);
                     }
                     else
                     {
@@ -422,14 +421,14 @@ namespace Data_Lake_Export
                 }
             }
 
-            private static void createNewSection(ref Document workingDoc, string sectionHead)
+            private static void CreateNewSection(ref Document workingDoc, string sectionHead)
             {
                 workingDoc.AddSection();
                 workingDoc.LastSection.PageSetup.TopMargin = Unit.FromInch(.25);
                 workingDoc.LastSection.PageSetup.BottomMargin = Unit.FromInch(.5);
                 workingDoc.LastSection.PageSetup.LeftMargin = Unit.FromInch(.25);
                 workingDoc.LastSection.PageSetup.RightMargin = Unit.FromInch(.25);
-                Paragraph pTitle = new Paragraph();
+                
                 workingDoc.LastSection.AddParagraph(sectionHead, "Heading1");
                 if (_rowBreak != null && _rowBreak != "" && sectionHead != "")
                 {
@@ -466,17 +465,15 @@ namespace Data_Lake_Export
                 Row thisHeader = workingTable.AddRow();
 
                 thisHeader.Format.Font = fontHeader.Clone();
-                intX = 0;
-
-                thisHeader.Format.Shading = shadingHeader.Clone();
-                thisHeader.Shading = shadingHeader.Clone();
+                thisHeader.Format.Shading = ShadingHeader.Clone();
+                thisHeader.Shading = ShadingHeader.Clone();
                 thisHeader.HeadingFormat = true;
 
                 foreach (string thisColumn in rowHeaders)
                 {
                     thisHeader.Cells[intX].AddParagraph(rowHeaders[intX]);
-                    thisHeader.Cells[intX].Shading = shadingHeader.Clone();
-                    intX = intX + 1;
+                    thisHeader.Cells[intX].Shading = ShadingHeader.Clone();
+                    intX += 1;
                 }
 
                 return workingTable;
@@ -609,7 +606,7 @@ namespace Data_Lake_Export
                 }
             }
 
-            private static int ExportToPDF(DataTable queryResults)
+            private static int ExportToPdf(DataTable queryResults)
             {
                 try
                 {
@@ -618,8 +615,8 @@ namespace Data_Lake_Export
                     var pdfDoc = new PdfDocument();
                     var pdfPage = pdfDoc.AddPage();
                     var pdfGfx = XGraphics.FromPdfPage(pdfPage);
-                    shadingHeader.Color = Color.FromRgb(189, 212, 249);
-                    shadingAlternateRow.Color = Color.FromRgb(224, 236, 255);
+                    ShadingHeader.Color = Color.FromRgb(189, 212, 249);
+                    ShadingAlternateRow.Color = Color.FromRgb(224, 236, 255);
 
                     // Create a new MigraDoc document
                     Document pdfDDocument = new Document();
@@ -627,7 +624,7 @@ namespace Data_Lake_Export
                     pdfDDocument.Info.Subject = _title + " PDF Generated by Data Lake Export (PDF) ";
                     pdfDDocument.Info.Author = "Billy Willoughby";
 
-                    setupDefaultPage(ref pdfDDocument, ref fontSize);
+                    SetupDefaultPage(ref pdfDDocument, ref fontSize);
 
                     //Setup Fonts
                     XFont myStandardFont = new XFont(FontFamily.GenericMonospace, fontSize, XFontStyle.Regular);
@@ -636,7 +633,7 @@ namespace Data_Lake_Export
                     Font fontHeader = new Font(FontFamily.GenericMonospace.Name, fontSize);
                     fontHeader.Bold = true;
 
-                    createNewSection(ref pdfDDocument, _title);
+                    CreateNewSection(ref pdfDDocument, _title);
 
                     string[] rowHeaders = new string[queryResults.Columns.Count];
                     XSize[] columnWidth = new XSize[queryResults.Columns.Count];
@@ -692,9 +689,9 @@ namespace Data_Lake_Export
                                 if (thisTable.Rows.Count > 1)
                                 {
                                     Table finalTable = thisTable.Clone();
-                                    autosizeTableColumns(ref finalTable, ref rowHeaders, ref columnWidth, myStandardFont, myHeaderFont, fontSize);
+                                    AutosizeTableColumns(ref finalTable, ref rowHeaders, ref columnWidth, myStandardFont, myHeaderFont, fontSize);
                                     pdfDDocument.LastSection.Add(finalTable);
-                                    createNewSection(ref pdfDDocument, thisDataRow.ItemArray[(int)_rowBreakLocation].ToString().Trim());
+                                    CreateNewSection(ref pdfDDocument, thisDataRow.ItemArray[(int)_rowBreakLocation].ToString().Trim());
                                     thisTable = CreateNewTable(ref pdfDDocument, ref rowHeaders, fontHeader, fontSize);
                                     columnWidth = new XSize[queryResults.Columns.Count];
                                     tableRowIndex = 0;
@@ -707,7 +704,7 @@ namespace Data_Lake_Export
                             if (rowFlip)
                             {
                                 rowFlip = false;
-                                thisRow.Shading = shadingAlternateRow.Clone();
+                                thisRow.Shading = ShadingAlternateRow.Clone();
                             }
                             else
                             {
@@ -735,7 +732,7 @@ namespace Data_Lake_Export
 
 
 
-                        autosizeTableColumns(ref thisTable, ref rowHeaders, ref columnWidth, myStandardFont, myHeaderFont, fontSize);
+                        AutosizeTableColumns(ref thisTable, ref rowHeaders, ref columnWidth, myStandardFont, myHeaderFont, fontSize);
 
                         pdfDDocument.LastSection.PageSetup.LeftMargin = Unit.FromInch(.25);
 
@@ -753,14 +750,14 @@ namespace Data_Lake_Export
                     }
 
                     Console.WriteLine("Rendering PDF ...");
-                    if (_optionPDF == "4")
+                    if (_optionPdf == "4")
                     {
                         pdfDDocument.DefaultPageSetup.Orientation = Orientation.Landscape;
                         pdfDDocument.DefaultPageSetup.PageHeight = Unit.FromInch(_intMajorWidth + .45 /*Margins*/);
                         pdfDDocument.DefaultPageSetup.PageWidth = Unit.FromInch(11);
                     }
 
-                    if (_optionPDF == "0")
+                    if (_optionPdf == "0")
                     {
                         if (_intMajorWidth + .45 /*Margins*/<= 8) /*Letter*/
                         {
@@ -837,7 +834,7 @@ namespace Data_Lake_Export
                 }
             }
 
-            private static void autosizeTableColumns(ref Table thisTable, ref string[] rowHeaders, ref XSize[] columnWidth,
+            private static void AutosizeTableColumns(ref Table thisTable, ref string[] rowHeaders, ref XSize[] columnWidth,
                 XFont myStandardFont, XFont myHeaderFont, int fontSize)
             {
                 int colIndex = 0;
@@ -862,9 +859,9 @@ namespace Data_Lake_Export
                         Unit myUnit = columnWidth[colIndex].Width;
                         Debug.WriteLine(myUnit.Centimeter.ToString());
                         thisTable.Columns[colIndex].Width = myUnit;
-                        thisTableWidth = thisTableWidth + myUnit.Inch;
+                        thisTableWidth += myUnit.Inch;
 
-                        colIndex = colIndex + 1;
+                        colIndex += 1;
                     }
                     if (thisTableWidth > _intMajorWidth)
                     {
@@ -886,16 +883,16 @@ namespace Data_Lake_Export
                             myUnit = columnWidth[colIndex].Width;
                         }
                         thisTable.Columns[colIndex].Width = myUnit;
-                        _intMajorWidth = _intMajorWidth + myUnit.Inch;
-                        colIndex = colIndex + 1;
+                        _intMajorWidth += myUnit.Inch;
+                        colIndex += 1;
                     }
 
                 }
             }
 
-            private static void setupDefaultPage(ref Document pdfDDocument, ref int fontSize)
+            private static void SetupDefaultPage(ref Document pdfDDocument, ref int fontSize)
             {
-                switch (_optionPDF)
+                switch (_optionPdf)
                 {
                     case "0":
                         //Auto Code
@@ -943,7 +940,7 @@ namespace Data_Lake_Export
                         break;
 
                     default:
-                        Console.WriteLine("Unknown Option for PDF selected:" + _optionPDF);
+                        Console.WriteLine("Unknown Option for PDF selected:" + _optionPdf);
                         pdfDDocument.DefaultPageSetup.RightMargin = .25;
                         pdfDDocument.DefaultPageSetup.LeftMargin = .25;
                         pdfDDocument.DefaultPageSetup.BottomMargin = .25;
@@ -956,12 +953,12 @@ namespace Data_Lake_Export
 
             }
 
-            private static int PDFPageNumber = 1;
+            private static int _pdfPageNumber = 1;
 
             private static void DocumentRenderer_PrepareDocumentProgress(object sender, DocumentRenderer.PrepareDocumentProgressEventArgs e)
             {
-                Console.Write("\rPage {0}...          ", PDFPageNumber);
-                PDFPageNumber++;
+                Console.Write("\rPage {0}...          ", _pdfPageNumber);
+                _pdfPageNumber++;
             }
         }
     }
