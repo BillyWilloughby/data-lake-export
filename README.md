@@ -111,6 +111,8 @@ See the [MigraDoc Foundation License](http://www.pdfsharp.net/MigraDoc_License.a
 -   This also applies to commercial products (both Open Source and Closed Source)
 -   PDFsharp and MigraDoc Foundation will remain Open Source and free to use even in the far future
 
+apt-get install -y libgdiplus
+
 ## Trademarks
 This project is not affiliated with Infor.  All product names, trademarks, and registered trademarks are property of their respective owners.
 

@@ -2,6 +2,7 @@
 # The file DataLakeExport must be marked executable after extracting
 #
 # Please set the environment variables to use this sample. (or just put the information below)
+# use export ionAPI=etc
 # $ionAPI  = The IONAPI authorization file
 # $compass = The Environment URL for the COMPASS API
 echo
